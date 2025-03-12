@@ -19,7 +19,6 @@ temp/
 frontend/node_modules
 frontend/.env
 frontend/dist/
-frontend/
 
 backend/node_modules/
 backend/.env
