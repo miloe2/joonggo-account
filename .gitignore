@@ -1,0 +1,30 @@
+# 일반적으로 제외할 파일
+node_modules/
+dist/
+.env
+.DS_Store
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+out/
+coverage/
+temp/
+.cache/
+
+# 특정 디렉터리별 제외 규칙
+frontend/node_modules
+frontend/.env
+frontend/dist/
+frontend/
+
+backend/node_modules/
+backend/.env
+backend/dist/
+backend/__pycache__/
+backend/migrations/
+backend/venv/
+backend/.venv/
