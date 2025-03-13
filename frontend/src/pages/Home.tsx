@@ -8,7 +8,7 @@ const tableData = [
     "price": 200,
     "address": "M1 맥북에어 판매합니다.",
     "contact": "010-9155-3194",
-    "saleDate": "2024-03-15T00:00:00.000Z",
+    "saleDate": "2025-03-15T00:00:00.000Z",
     "isActive": false
   },
   {
@@ -18,7 +18,7 @@ const tableData = [
     "price": 200,
     "address": "M1 맥북에어 판매합니다.",
     "contact": "010-9155-3194",
-    "saleDate": "2024-03-15T00:00:00.000Z",
+    "saleDate": "2025-03-15T00:00:00.000Z",
     "isActive": false
   },
   {
@@ -28,14 +28,14 @@ const tableData = [
     "price": 200,
     "address": "M1 맥북에어 판매합니다.",
     "contact": "010-9155-3194",
-    "saleDate": "2024-03-15T00:00:00.000Z",
+    "saleDate": "2025-03-15T00:00:00.000Z",
     "isActive": false
   },
 ]
 
 const Home = () => {
   return (
-    <div className='bg-red-200 w-full h-full p-10'>
+    <div className='w-full h-full pt-10'>
       <Table tableData={tableData}/>
     </div>
   )
