@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import useAppStore from '../store/useAppStore';
 
 const menu = [
   { title: '매출', path: '/' },
@@ -7,7 +7,10 @@ const menu = [
   { title: '통계', path: '/' },
 ]
 const SideMenu = ({ width }: { width: Number }) => {
-  const [isActived, setIsActived] = useState('매출')
+  const { table, setTable } = useAppStore();
+  const handleMenu = (title: string) => {
+    setTable(title);
+  };
 
   return (
     <aside
@@ -19,9 +22,9 @@ const SideMenu = ({ width }: { width: Number }) => {
           menu.map((item, index) => (
             <li
               key={index}
-              onClick={() => setIsActived(item.title)}
+              onClick={() => handleMenu(item.title)}
               className={`
-              ${isActived === item.title ? 'text-blue-500 font-bold bg-blue-500' : 'text-black bg-black'}
+              ${table === item.title ? 'text-blue-500 font-bold bg-blue-500' : 'text-black bg-black'}
               cursor-pointer 
               `}
             >{item.title}</li>
