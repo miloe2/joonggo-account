@@ -12,10 +12,6 @@ export interface TableData {
 export interface UseAppStore {
   table: string;
   setTable: (value: string) => void;
-  // isLoading: boolean;
-  // setLoadingStatus: () => void;
-  // pathLoading: boolean;
-  // setPathLoading: () => void;
-  // uuid: string;
-  // setUUID: (value: string) => void;
+  tableData: TableData[];
+  setTableData: (id: string, key: keyof TableData, value: string | boolean | number) => void;
 }
