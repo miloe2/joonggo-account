@@ -16,6 +16,25 @@ export const fetchData: ApiTypes["fetchData"] = async (table) => {
   }
 };
 
+// 
+// export const updateData = async (changes) => {
+//   console.log("updateData", "api start######");
+//   try {
+//     const rsp = await axios
+//   } catch (error) {
+    
+//   }
+// }
+
+/** process
+사용자입력 -> pendignChanges로 이동 -> interval 5초마다 updateData(pendingChanges)호출 
+### updateData(pendingChanges) 설명
+- pengdingChanges.length !== 0
+- pendingChanges를 id값으로 group화
+- group.foreach(id값에 따른 api 호출 (생성/수정))
+- pendingChange = [] 초기화
+*/ 
+
 // 데이터 추가하기
 export const fetchAddData = async () => {
   console.log("fetchAddData api start");

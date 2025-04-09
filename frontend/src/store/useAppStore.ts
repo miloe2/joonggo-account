@@ -2,11 +2,14 @@ import { create } from "zustand";
 import { UseAppStore } from "../types/types";
 
 const useAppStore = create<UseAppStore>((set) => ({
+  // 어떤 페이지
   table: "매출",
   setTable: (value) =>
     set(() => {
       return { table: value };
     }),
+
+  // 실제 사용 데이터 
   tableData: [
     // {
     //   "_id": "67cea30aaa6ee6cdcf10b5f3",
@@ -57,21 +60,20 @@ const useAppStore = create<UseAppStore>((set) => ({
         item._id === id ? { ...item, [key]: value } : item
       ),
     })),
-  // isLoading: false,
-  // setLoadingStatus: () =>
-  //   set((state) => ({
-  //     isLoading: !state.isLoading,
-  //   })),
-  // pathLoading: false,
-  // setPathLoading: () =>
-  //   set((state) => ({
-  //     pathLoading: !state.pathLoading,
-  //   })),
-  // uuid: "",
-  // setUUID: (value) =>
-  //   set(() => {
-  //     return { uuid: value };
-  //   }),
+
+  // 변경 값 큐
+  pendingChanges: [],
+
+  // 변경 값을 큐에 저장하기
+  queueChange: (change) =>
+    set((state) => {
+      const filteredChagne =
+        state.pendingChanges.filter((item) => !(item.id === change.id && item.key === change.key));
+      return {
+        pendingChanges: [...filteredChagne, change]
+      }
+    }),
+
 }));
 
 export default useAppStore;

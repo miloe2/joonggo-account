@@ -9,13 +9,23 @@ export interface TableData {
   saleDate: string;
 }
 
+export interface PendingChange {
+  id: string;
+  key: keyof TableData;
+  value: any;
+}
+
 export interface UseAppStore {
   table: string;
   setTable: (value: string) => void;
+
   tableData: TableData[];
   setTableData: (value: TableData[]) => void;
   addTableRow: (value: TableData) => void;
   updateTableData: (id: string, key: keyof TableData, value: string | boolean | number) => void;
+
+  pendingChanges: PendingChange[];
+  queueChange: (change: PendingChange) => void;
 }
 
 export interface ApiTypes {

@@ -39,12 +39,13 @@ string 날짜를 MM/DD 로 분할하여 input으로 넣고, input 값을 바탕�
 1번 : (월별 호출) zustand로 전역으로 관리하기, zustand로 저장하기 & 데이터 수정하기 
  */
 const Table = ({ tableData }: { tableData: TableData[] }) => {
-  const { table, updateTableData, addTableRow } = useAppStore();
+  const { table, updateTableData, addTableRow, pendingChanges, queueChange } = useAppStore();
   const today = new Date()
 
 
   const handleUpdate = (id: string, key: keyof TableData, value: string | number | boolean) => {
     updateTableData(id, key, value);
+    queueChange({id, key, value});
   };
 
   const addTempRow = () => {
@@ -60,10 +61,8 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
       "isActive": false
     };
     addTableRow(initValue);
+    console.log(pendingChanges)
   };
-
-
-
 
   return (
     <article
