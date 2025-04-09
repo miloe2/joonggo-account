@@ -39,13 +39,30 @@ string 날짜를 MM/DD 로 분할하여 input으로 넣고, input 값을 바탕�
 1번 : (월별 호출) zustand로 전역으로 관리하기, zustand로 저장하기 & 데이터 수정하기 
  */
 const Table = ({ tableData }: { tableData: TableData[] }) => {
-  const { table, setTableData } = useAppStore();
+  const { table, updateTableData, addTableRow } = useAppStore();
+  const today = new Date()
+
+
   const handleUpdate = (id: string, key: keyof TableData, value: string | number | boolean) => {
-    setTableData(id, key, value);
+    updateTableData(id, key, value);
+  };
+
+  const addTempRow = () => {
+    const initValue =
+    {
+      "_id": `temp-${Date.now()}`,
+      "category": table,
+      "product": "",
+      "price": 0,
+      "address": "",
+      "contact": "",
+      "saleDate": today.toISOString(),
+      "isActive": false
+    };
+    addTableRow(initValue);
   };
 
 
-  // 부모 GET요청 -> 자식 전달 -> 자식은 useState로 값을 지정
 
 
   return (
@@ -84,7 +101,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
                     <input
                       type="date"
                       value={item.saleDate.slice(0, 10)}
-                      onChange={(e) => setTableData(item._id, 'saleDate', e.target.value)}
+                      onChange={(e) => handleUpdate(item._id, 'saleDate', e.target.value)}
                     />
                   </div>
                 </td>
@@ -123,6 +140,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
           }
         </tbody>
       </table>
+      <button onClick={() => addTempRow()}>추가하기</button>
     </article>
   )
 }
