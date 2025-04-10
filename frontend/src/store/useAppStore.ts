@@ -73,6 +73,10 @@ const useAppStore = create<UseAppStore>((set) => ({
         pendingChanges: [...filteredChagne, change]
       }
     }),
+  clearPendingChanges: () =>
+    set(() => ({
+      pendingChanges: [],
+    }))
 
 }));
 

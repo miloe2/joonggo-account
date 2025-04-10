@@ -22,27 +22,49 @@ export const fetchData: ApiTypes["fetchData"] = async (table) => {
 //   try {
 //     const rsp = await axios
 //   } catch (error) {
-    
+
 //   }
 // }
 
 /** process
-사용자입력 -> pendignChanges로 이동 -> interval 5초마다 updateData(pendingChanges)호출 
+- 사용자입력
+- pendignChanges { id, key, value } 저장
+- 기존 id, key가 동일하다면, 가장 최근에 들어온 입력값만 저장 
+-> interval 5초마다 updateData(pendingChanges)호출 
 ### updateData(pendingChanges) 설명
 - pengdingChanges.length !== 0
 - pendingChanges를 id값으로 group화
 - group.foreach(id값에 따른 api 호출 (생성/수정))
+- (생성Postapi 호출 시) tempId를 Map저장
+- 생성Post api 200일 때, real_id와 를 Map에 value로 저장
+- zustand tableData의 temp 아이디를 real_id로 변환 
 - pendingChange = [] 초기화
-*/ 
+*/
 
 // 데이터 추가하기
-export const fetchAddData = async () => {
+//@ts-ignore
+export const fetchAddData: ApiTypes["fetchAddData"] = async (newData) => {
   console.log("fetchAddData api start");
   try {
     const rsp = await axios.post(`${BASE_URL}/api/sales`, {
-
+      newData
     });
     console.log("API Response:", rsp.data);
+    return rsp;
+    // return 'real_id'
+  } catch (error) {
+    console.error("오류 발생!", error);
+  }
+};
+
+// 데이터 업데이트
+export const fetchUpdateData: ApiTypes["fetchUpdateData"] = async ({ id, key, value }) => {
+  console.log("fetchUpdateData api start");
+  try {
+    const rsp = await axios.put(`${BASE_URL}/api/sales`, {
+      id, key, value
+    });
+    console.log("API Response:", rsp);
   } catch (error) {
     console.error("오류 발생!", error);
   }

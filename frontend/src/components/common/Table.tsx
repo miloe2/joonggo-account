@@ -2,6 +2,7 @@ import { useState, Fragment } from 'react';
 import useAppStore from '../../store/useAppStore'
 import { TableData } from '../../types/types';
 import { formattedDate, formatPhoneNumber, formatPriceNumber } from '../../utils/utils';
+import { fetchAddData, fetchUpdateData } from '../../api';
 
 const tableMenu = [
   {
@@ -39,13 +40,13 @@ string 날짜를 MM/DD 로 분할하여 input으로 넣고, input 값을 바탕�
 1번 : (월별 호출) zustand로 전역으로 관리하기, zustand로 저장하기 & 데이터 수정하기 
  */
 const Table = ({ tableData }: { tableData: TableData[] }) => {
-  const { table, updateTableData, addTableRow, pendingChanges, queueChange } = useAppStore();
+  const { table, updateTableData, addTableRow, pendingChanges, queueChange, clearPendingChanges } = useAppStore();
   const today = new Date()
 
 
   const handleUpdate = (id: string, key: keyof TableData, value: string | number | boolean) => {
     updateTableData(id, key, value);
-    queueChange({id, key, value});
+    queueChange({ id, key, value });
   };
 
   const addTempRow = () => {
@@ -62,6 +63,79 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
     };
     addTableRow(initValue);
     console.log(pendingChanges)
+  };
+
+  //   pendingChanges = [
+  //     {
+  //         "id": "temp-1744257706123",
+  //         "key": "product",
+  //         "value": " 세탁기 판매"
+  //     },
+  //     {
+  //         "id": "temp-1744257706123",
+  //         "key": "price",
+  //         "value": "20,000"
+  //     },
+  //     {
+  //         "id": "67cea30aaa6ee6cdcf10b5f3",
+  //         "key": "product",
+  //         "value": "중고 맥북"
+  //     }
+  // ]
+
+
+
+  // pendingChanges를 그룹핑함
+  const groupingId = () => {
+    const grouped = new Map<string, Partial<TableData>>();
+    pendingChanges.forEach((item) => {
+      if (!grouped.has(item.id)) {
+        grouped.set(item.id, { _id: item.id });
+      }
+      const current = grouped.get(item.id)!;
+      current[item.key] = item.value;
+      grouped.set(item.id, current);
+    });
+
+    return grouped;
+  };
+
+  const changeRealId = (temp_id: string, real_id: string) => {
+    updateTableData(temp_id, '_id', real_id)
+  }
+
+  const autoDataSave = () => {
+    if (pendingChanges.length === 0) return;
+    const groupedId = groupingId();
+    groupedId.forEach(async (mapItem) => {
+      try {
+        if (mapItem._id?.startsWith('temp')) {
+          const newData = {
+            category: mapItem.category ?? "",
+            product: mapItem.product ?? "",
+            price: mapItem.price ?? 0,
+            address: mapItem.address ?? "",
+            contact: mapItem.contact ?? "",
+            saleDate: mapItem.saleDate ?? new Date().toISOString(),
+            isActive: mapItem.isActive ?? false,
+          };
+          console.log('fetchAddData', newData);
+          const rsp = await fetchAddData(newData);
+          
+          // if(rsp.) 200일 경우 해당 내용 실행 {
+            // changeRealId(mapItem._id, rsp);
+            // clearPendingChanges();
+          // }
+
+        } else {
+          console.log('fetchUpdateData', mapItem);
+          // fetchUpdateData(mapItem);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
+    })
   };
 
   return (
@@ -94,7 +168,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
                 key={item._id}
                 className='bg-red-00 border-y-2 border-zinc-300'
               >
-                <td className='border-r-2 border-zinc-300'>{index + 1}</td>
+                <td className='border-r-2 border-zinc-300'>{index + 1}{item._id}</td>
                 <td className='border-r-2 border-zinc-300'>
                   <div className="flex items-center justify-center">
                     <input
@@ -139,7 +213,11 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
           }
         </tbody>
       </table>
-      <button onClick={() => addTempRow()}>추가하기</button>
+      <div className='w-full flex flex-col'>
+        <button onClick={() => addTempRow()}>추가하기</button>
+        <button onClick={() => autoDataSave()}>autoSave</button>
+
+      </div>
     </article>
   )
 }

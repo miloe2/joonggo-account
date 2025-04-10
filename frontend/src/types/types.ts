@@ -8,6 +8,7 @@ export interface TableData {
   isActive: boolean;
   saleDate: string;
 }
+type NewTableData = Omit<TableData, "_id">;
 
 export interface PendingChange {
   id: string;
@@ -26,8 +27,15 @@ export interface UseAppStore {
 
   pendingChanges: PendingChange[];
   queueChange: (change: PendingChange) => void;
+  clearPendingChanges: () => void;
 }
 
 export interface ApiTypes {
   fetchData: (table: string) => Promise<TableData[]>;
+  fetchAddData: (newData: NewTableData) => Promise<string>;
+  fetchUpdateData: <K extends keyof TableData>(params: {
+    id: string;
+    key: K;
+    value: TableData[K];
+  }) => Promise<void>;
 }
