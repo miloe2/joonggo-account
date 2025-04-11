@@ -17,11 +17,6 @@ exports.addSale = async (req, res) => {
   try {
     const { category, product, price, address, contact, saleDate } = req.body;
 
-    // 필수 값 검증
-    // if (!title || !content || !price || !saleDate) {
-    //   return res.status(400).json({ error: "모든 필드를 입력해야 합니다." });
-    // }
-
     // 새로운 Sales 문서 생성
     const newSale = new Sales({
       category,
@@ -34,7 +29,8 @@ exports.addSale = async (req, res) => {
 
     await newSale.save(); // MongoDB에 저장
     res.status(201).json(newSale); // 생성된 데이터 반환
-    console.log(newSale)
+    console.log('check', newSale)
+    return res;
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -43,14 +39,14 @@ exports.addSale = async (req, res) => {
 // [PUT] Sale 데이터 수정
 exports.updateSale = async (req, res) => {
   try {
-    const { id, category, product, price, address, contact } = req.body; // ✅ 수정할 필드들
+    const { id, category, product, price, address, contact, saleDate } = req.body; // ✅ 수정할 필드들
 
+    console.log(req.body)
     if (!id) {
       return res.status(400).json({ error: "ID는 필수입니다." });
     }
 
     const existingSale = await Sales.findById(id);
-    console.log('찾은 ID : ', existingSale)
     if (!existingSale) {
       return res.status(404).json({ error: "해당 제품을 찾을 수 없습니다." });
     }
@@ -60,7 +56,9 @@ exports.updateSale = async (req, res) => {
     if (product !== undefined) existingSale.product = product;
     if (price !== undefined) existingSale.price = price;
     if (address !== undefined) existingSale.address = address;
+    if (saleDate !== undefined) existingSale.saleDate = saleDate;
     if (contact !== undefined) existingSale.contact = contact;
+    console.log('필드 업데이트 된 값: ', existingSale)
 
     // ✅ 업데이트된 데이터를 저장
     const updatedSale = await existingSale.save();
@@ -69,6 +67,7 @@ exports.updateSale = async (req, res) => {
       message: "상품 정보가 성공적으로 수정되었습니다.",
       updatedSale,
     });
+    return res;
 
   } catch (error) {
     res.status(500).json({ error: error.message });
