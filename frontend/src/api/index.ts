@@ -1,9 +1,8 @@
 import axios from "axios";
 import { ApiTypes } from "../types/types";
 
-// const BASE_URL = "http://172.20.10.3:3000";
 // const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "http://172.20.10.3:5000";
 
 export const fetchData: ApiTypes["fetchData"] = async (table) => {
   console.log("fetchData", table, "api start######");
@@ -42,30 +41,35 @@ export const fetchData: ApiTypes["fetchData"] = async (table) => {
 */
 
 // 데이터 추가하기
-//@ts-ignore
 export const fetchAddData: ApiTypes["fetchAddData"] = async (newData) => {
-  console.log("fetchAddData api start");
+  console.log("fetchAddData api start", newData);
   try {
-    const rsp = await axios.post(`${BASE_URL}/api/sales`, {
-      newData
-    });
+    const rsp = await axios.post(`${BASE_URL}/api/sales`, newData);
     console.log("API Response:", rsp.data);
     return rsp;
     // return 'real_id'
   } catch (error) {
     console.error("오류 발생!", error);
+    throw error;
   }
 };
 
 // 데이터 업데이트
-export const fetchUpdateData: ApiTypes["fetchUpdateData"] = async ({ id, key, value }) => {
-  console.log("fetchUpdateData api start");
+//@ts-ignore
+export const fetchUpdateData: ApiTypes["fetchUpdateData"] = async (rawData) => {
+  const { _id, ...others } = rawData;
+  const updateData = {
+    id: _id,
+    ...others
+  };
+  console.log("fetchUpdateData api start", updateData);
+
   try {
-    const rsp = await axios.put(`${BASE_URL}/api/sales`, {
-      id, key, value
-    });
+    const rsp = await axios.put(`${BASE_URL}/api/sales`, updateData);
     console.log("API Response:", rsp);
+    return rsp;
   } catch (error) {
     console.error("오류 발생!", error);
+    throw error;
   }
 };

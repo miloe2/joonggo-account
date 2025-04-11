@@ -38,32 +38,6 @@ string 날짜를 MM/DD 로 분할하여 input으로 넣고, input 값을 바탕�
 -- 데이터를 카테고리별로 호출함 => 1번. 클라이언트 사이드에서 관리를 해야함. 수정을 했을 경우 수정된게 보이고 (데이터를 저장히지 않더라도, ) , 2번. 나중에는 데이터를 저장해야함.
 
 1번 : (월별 호출) zustand로 전역으로 관리하기, zustand로 저장하기 & 데이터 수정하기 
- */
-const Table = ({ tableData }: { tableData: TableData[] }) => {
-  const { table, updateTableData, addTableRow, pendingChanges, queueChange, clearPendingChanges } = useAppStore();
-  const today = new Date()
-
-
-  const handleUpdate = (id: string, key: keyof TableData, value: string | number | boolean) => {
-    updateTableData(id, key, value);
-    queueChange({ id, key, value });
-  };
-
-  const addTempRow = () => {
-    const initValue =
-    {
-      "_id": `temp-${Date.now()}`,
-      "category": table,
-      "product": "",
-      "price": 0,
-      "address": "",
-      "contact": "",
-      "saleDate": today.toISOString(),
-      "isActive": false
-    };
-    addTableRow(initValue);
-    console.log(pendingChanges)
-  };
 
   //   pendingChanges = [
   //     {
@@ -78,12 +52,54 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
   //     },
   //     {
   //         "id": "67cea30aaa6ee6cdcf10b5f3",
-  //         "key": "product",
-  //         "value": "중고 맥북"
+  //         "key": "contact",
+  //         "value": "010-1111-2222"
+  //     }
+  //     {
+  //         "id": "67cea30aaa6ee6cdcf10b5f3",
+  //         "key": "price",
+  //         "value": "20000"
   //     }
   // ]
+ */
+const Table = ({ tableData }: { tableData: TableData[] }) => {
+  const { table, updateTableData, addTableRow, pendingChanges, queueChange, clearPendingChanges } = useAppStore();
+
+  const handleUpdate = (id: string, key: keyof TableData, value: string | number | boolean) => {
+    updateTableData(id, key, value);
+    queueChange({ id, key, value });
+  };
 
 
+  const createInitialTableData = (
+    category: string,
+    withTempId: boolean = true,
+    overrides: Partial<TableData> = {}
+  ): TableData => {
+
+    if (typeof overrides.price === "string") {
+      const onlyNumber = (overrides.price as string).replace(/[^0-9.-]/g, "");
+      overrides.price = Number(onlyNumber);
+    };
+
+    return {
+      _id: withTempId ? `temp-${Date.now()}` : "",
+      category,
+      product: "",
+      price: 0,
+      address: "",
+      contact: "",
+      saleDate: new Date().toISOString(),
+      isActive: false,
+      ...overrides, // ✅ 덮어쓰기
+    };
+  };
+
+  const addTempRow = () => {
+    const initValue = createInitialTableData(table)
+    addTableRow(initValue);
+    console.log(pendingChanges)
+  };
 
   // pendingChanges를 그룹핑함
   const groupingId = () => {
@@ -107,34 +123,31 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
   const autoDataSave = () => {
     if (pendingChanges.length === 0) return;
     const groupedId = groupingId();
+    // grouping 된 Map을 객체로 변환환
     groupedId.forEach(async (mapItem) => {
+      const newData = createInitialTableData(table, false, mapItem);
+      console.log(newData, 'newData')
       try {
         if (mapItem._id?.startsWith('temp')) {
-          const newData = {
-            category: mapItem.category ?? "",
-            product: mapItem.product ?? "",
-            price: mapItem.price ?? 0,
-            address: mapItem.address ?? "",
-            contact: mapItem.contact ?? "",
-            saleDate: mapItem.saleDate ?? new Date().toISOString(),
-            isActive: mapItem.isActive ?? false,
-          };
-          console.log('fetchAddData', newData);
-          const rsp = await fetchAddData(newData);
-          
-          // if(rsp.) 200일 경우 해당 내용 실행 {
-            // changeRealId(mapItem._id, rsp);
-            // clearPendingChanges();
-          // }
+          const { _id, ...dataWithoutId } = newData;
+
+          // console.log('fetchAddData', dataWithoutId);
+          const rsp = await fetchAddData(dataWithoutId);
+          console.log(rsp)
+          if (rsp?.status === 200 || rsp?.status === 201) {
+            changeRealId(_id, rsp.data._id);
+            clearPendingChanges();
+          }
 
         } else {
-          console.log('fetchUpdateData', mapItem);
-          // fetchUpdateData(mapItem);
+          const rsp = await fetchUpdateData(newData);
+          if (rsp?.status === 200 || rsp?.status === 201) {
+            clearPendingChanges();
+          }
         }
       } catch (error) {
         console.log(error);
       }
-
     })
   };
 
@@ -214,13 +227,12 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
         </tbody>
       </table>
       <div className='w-full flex flex-col'>
-        <button onClick={() => addTempRow()}>추가하기</button>
-        <button onClick={() => autoDataSave()}>autoSave</button>
-
+        <button className='bg-red-300' onClick={() => addTempRow()}>추가하기</button>
+        <button className='bg-blue-300' onClick={() => autoDataSave()}>autoSave</button>
       </div>
     </article>
   )
 }
 
-export default Table
+export default Table;
 
