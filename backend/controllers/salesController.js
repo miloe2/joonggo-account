@@ -17,9 +17,8 @@ exports.getSales = async (req, res) => {
       const endDate = new Date(numericYear, numericMonth, 1);
       filter.saleDate = { $gte: startDate, $lt: endDate };
     }
-    console.log(filter)
-
-    const sales = await Sales.find(filter);
+    console.log(filter);
+    const sales = await Sales.find(filter).sort({ "saleDate": 1 });
     res.status(200).json(sales);
   } catch (error) {
     console.error(error);
