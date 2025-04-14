@@ -9,8 +9,10 @@ exports.getSales = async (req, res) => {
     if (category) filter.category = category;
 
     if (year && month) {
-      const numericYear = parseInt(year);
-      const numericMonth = parseInt(month);
+      const numericYear = (year);
+      const numericMonth = (month);
+      // const numericYear = parseInt(year);
+      // const numericMonth = parseInt(month);
       const startDate = new Date(numericYear, numericMonth - 1, 1);
       const endDate = new Date(numericYear, numericMonth, 1);
       filter.saleDate = { $gte: startDate, $lt: endDate };
