@@ -1,11 +1,24 @@
 const Sales = require("../models/Sales");
 
-// [GET] 전체 조회
-exports.getAllSales = async (req, res) => {
+// [GET] 데이터 조회
+exports.getSales = async (req, res) => {
   try {
-    const sales = await Sales.find();
-    res.json(sales);
-    console.log(sales);
+    const filter = {};
+    const { category, year, month } = req.query;
+
+    if (category) filter.category = category;
+
+    if (year && month) {
+      const numericYear = parseInt(year);
+      const numericMonth = parseInt(month);
+      const startDate = new Date(numericYear, numericMonth - 1, 1);
+      const endDate = new Date(numericYear, numericMonth, 1);
+      filter.saleDate = { $gte: startDate, $lt: endDate };
+    }
+    console.log(filter)
+
+    const sales = await Sales.find(filter);
+    res.status(200).json(sales);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });

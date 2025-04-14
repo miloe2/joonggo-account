@@ -1,9 +1,9 @@
 const express = require("express");
-const { getAllSales, addSale, updateSale, deleteSale } = require("../controllers/salesController");
+const { getSales, addSale, updateSale, deleteSale } = require("../controllers/salesController");
 
 const router = express.Router();
 
-router.get("/", getAllSales);
+router.get("/", getSales);
 router.post("/", addSale);
 router.put("/", updateSale);
 router.post("/delete", deleteSale);
