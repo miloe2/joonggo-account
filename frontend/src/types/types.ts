@@ -33,7 +33,8 @@ export interface UseAppStore {
 }
 
 export interface ApiTypes {
-  fetchData: (table: string) => Promise<TableData[]>;
+  fetchData: ({ table, year, month }: { table: string, year: number, month: number }) => Promise<TableData[]>;
+  // fetchData: (param: Record<string, string>) => Promise<TableData[]>;
   fetchAddData: (newData: NewTableData) => Promise<AxiosResponse<{ _id: string }>>;
   fetchUpdateData: (updateData: TableData) => Promise<AxiosResponse>;
 }

@@ -6,10 +6,16 @@ const BASE_URL = "http://172.20.10.3:5000";
 
 
 // 모든 데이터 가져오기
-export const fetchData: ApiTypes["fetchData"] = async (table) => {
+export const fetchData: ApiTypes["fetchData"] = async ({table, year, month}) => {
   console.log("fetchData", table, "api start######");
   try {
-    const rsp = await axios.get(`${BASE_URL}/api/sales`);
+    const rsp = await axios.get(`${BASE_URL}/api/sales`, {
+      params: {
+        catgory : table,
+        year,
+        month,
+      },
+    });
     console.log("API Response:", rsp.data);
     return rsp.data;
   } catch (error) {
