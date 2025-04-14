@@ -14,7 +14,7 @@ const Home = () => {
       const data = await fetchData({ table, year: yearMonth.year, month: yearMonth.month });
       setTableData(data);
     })();
-  }, [yearMonth.year, yearMonth.month]);
+  }, [table, yearMonth.year, yearMonth.month]);
 
   return (
     <div className='w-full h-full pt-10'>

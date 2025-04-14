@@ -11,7 +11,7 @@ export const fetchData: ApiTypes["fetchData"] = async ({table, year, month}) => 
   try {
     const rsp = await axios.get(`${BASE_URL}/api/sales`, {
       params: {
-        catgory : table,
+        category : table,
         year,
         month,
       },

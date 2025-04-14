@@ -1,7 +1,7 @@
 import { useState, Fragment } from 'react';
 import useAppStore from '../../store/useAppStore'
 import { TableData } from '../../types/types';
-import { formattedDate, formatPhoneNumber, formatPriceNumber } from '../../utils/utils';
+import { formatPhoneNumber, formatPriceNumber } from '../../utils/utils';
 import { fetchAddData, fetchUpdateData } from '../../api';
 
 const tableMenu = [
@@ -52,6 +52,7 @@ input {
 1. 월별로 보여주기
 1-1. 월 단위 devider (sticky?)
 2. 매출/매입/지출로 보여주기
+3. 캐싱하기 / 렌더링 최적화
 
 setInterval(5000) 저장 처리 하기
 
@@ -79,10 +80,10 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
     return {
       _id: withTempId ? `temp-${Date.now()}` : "",
       category,
-      product: "",
-      price: 0,
-      address: "",
-      contact: "",
+      product: undefined,
+      price: undefined,
+      address: undefined,
+      contact: undefined,
       saleDate: new Date().toISOString(),
       isActive: false,
       ...overrides, // ✅ 덮어쓰기
@@ -190,7 +191,9 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
                 key={item._id}
                 className='bg-red-00 border-y-2 border-zinc-300'
               >
-                <td className='border-r-2 border-zinc-300'>{index + 1}{item._id}</td>
+                <td className='border-r-2 border-zinc-300'>{index + 1}
+                  {/* {item._id} */}
+                </td>
                 <td className='border-r-2 border-zinc-300'>
                   <div className="flex items-center justify-center">
                     <input
@@ -205,20 +208,20 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
                     className='w-full px-2'
                     type="text"
                     onChange={(e) => handleUpdate(item._id, 'product', e.target.value)}
-                    value={item.product} />
+                    value={item.product ?? ""} />
                 </td>
                 <td className='border-r-2 border-zinc-300'>
                   <input
                     className='w-full px-2'
                     type="text"
                     onChange={(e) => handleUpdate(item._id, 'price', formatPriceNumber(e.target.value))}
-                    value={item.price} />
+                    value={formatPriceNumber(item.price as number) ?? ""} />
                 </td>
                 <td className='border-r-2 border-zinc-300'>
                   <input
                     className='w-full px-2'
                     type="tel"
-                    value={item.contact}
+                    value={item.contact ?? ""}
                     onChange={(e) =>
                       handleUpdate(item._id, 'contact', formatPhoneNumber(e.target.value))
                     }
@@ -228,7 +231,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
                     className='w-full px-2'
                     type="text"
                     onChange={(e) => handleUpdate(item._id, 'address', e.target.value)}
-                    value={item.address} />
+                    value={item.address ?? ""} />
                 </td>
               </tr>
             ))

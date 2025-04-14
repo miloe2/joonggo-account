@@ -3,10 +3,10 @@ import { AxiosResponse } from "axios";
 export interface TableData {
   _id: string;
   category: string;
-  product: string;
-  price: number;
-  address: string;
-  contact: string;
+  product: string | undefined;
+  price: number | undefined;
+  address: string | undefined;
+  contact: string | undefined;
   isActive: boolean;
   saleDate: string;
 }
