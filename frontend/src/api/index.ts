@@ -4,6 +4,8 @@ import { ApiTypes } from "../types/types";
 // const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const BASE_URL = "http://172.20.10.3:5000";
 
+
+// 모든 데이터 가져오기
 export const fetchData: ApiTypes["fetchData"] = async (table) => {
   console.log("fetchData", table, "api start######");
   try {
@@ -14,16 +16,6 @@ export const fetchData: ApiTypes["fetchData"] = async (table) => {
     console.error("오류 발생!", error);
   }
 };
-
-// 
-// export const updateData = async (changes) => {
-//   console.log("updateData", "api start######");
-//   try {
-//     const rsp = await axios
-//   } catch (error) {
-
-//   }
-// }
 
 /** process
 - 사용자입력
@@ -55,7 +47,6 @@ export const fetchAddData: ApiTypes["fetchAddData"] = async (newData) => {
 };
 
 // 데이터 업데이트
-//@ts-ignore
 export const fetchUpdateData: ApiTypes["fetchUpdateData"] = async (rawData) => {
   const { _id, ...others } = rawData;
   const updateData = {

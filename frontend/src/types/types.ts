@@ -36,9 +36,4 @@ export interface ApiTypes {
   fetchData: (table: string) => Promise<TableData[]>;
   fetchAddData: (newData: NewTableData) => Promise<AxiosResponse<{ _id: string }>>;
   fetchUpdateData: (updateData: TableData) => Promise<AxiosResponse>;
-  // fetchUpdateData: <K extends keyof TableData>(params: {
-  //   id: string;
-  //   key: K;
-  //   value: TableData[K];
-  // }) => Promise<void>;
 }

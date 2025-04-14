@@ -20,47 +20,41 @@ const tableMenu = [
 ];
 const menuWidth = [5, 10, 20, 10, 20, 20, 20];
 
+//   pendingChanges = [
+//     {
+//         "id": "temp-1744257706123",
+//         "key": "product",
+//         "value": " 세탁기 판매"
+//     },
+//     {
+//         "id": "temp-1744257706123",
+//         "key": "price",
+//         "value": "20,000"
+//     },
+//     {
+//         "id": "67cea30aaa6ee6cdcf10b5f3",
+//         "key": "contact",
+//         "value": "010-1111-2222"
+//     }
+//     {
+//         "id": "67cea30aaa6ee6cdcf10b5f3",
+//         "key": "price",
+//         "value": "20000"
+//     }
+// ]
 const customStyle = `
 input {
   padding: 12px 0;
 }
 `;
 
-// const menuWidth = [0.8, 1, 2, 1, 2, 2, 1];
 /* TODO
- * 1. 클릭하면 수정 할수 있게하기. 
-데이터 값들은 input박스에 넣고, 클릭하면 useState(item)으로 추적하고, 변경있을 때, focus out이면, 수정 post 보내기
-2. 날짜를 어떻게 처리할지.
-string 날짜를 MM/DD 로 분할하여 input으로 넣고, input 값을 바탕으로 date를 다시 계산하는 함수 생성
-3. 추가 
-하단에 빈 input을 넣어주고, 클릭하면 useState new value로 관리.
+1. 월별로 보여주기
+1-1. 월 단위 devider (sticky?)
+2. 매출/매입/지출로 보여주기
 
--- 데이터를 카테고리별로 호출함 => 1번. 클라이언트 사이드에서 관리를 해야함. 수정을 했을 경우 수정된게 보이고 (데이터를 저장히지 않더라도, ) , 2번. 나중에는 데이터를 저장해야함.
+setInterval(5000) 저장 처리 하기
 
-1번 : (월별 호출) zustand로 전역으로 관리하기, zustand로 저장하기 & 데이터 수정하기 
-
-  //   pendingChanges = [
-  //     {
-  //         "id": "temp-1744257706123",
-  //         "key": "product",
-  //         "value": " 세탁기 판매"
-  //     },
-  //     {
-  //         "id": "temp-1744257706123",
-  //         "key": "price",
-  //         "value": "20,000"
-  //     },
-  //     {
-  //         "id": "67cea30aaa6ee6cdcf10b5f3",
-  //         "key": "contact",
-  //         "value": "010-1111-2222"
-  //     }
-  //     {
-  //         "id": "67cea30aaa6ee6cdcf10b5f3",
-  //         "key": "price",
-  //         "value": "20000"
-  //     }
-  // ]
  */
 const Table = ({ tableData }: { tableData: TableData[] }) => {
   const { table, updateTableData, addTableRow, pendingChanges, queueChange, clearPendingChanges } = useAppStore();
@@ -151,12 +145,27 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
     })
   };
 
+  /*
+  // 월별로 나누기 위한 코드 (미사용)
+  const groupedByMonth = (rawData: TableData[]) => {
+    const groups: Record<string, TableData[]> = {};
+    rawData.forEach((item) => {
+      const date = new Date(item.saleDate);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(item);
+    })
+    return groups;
+  };
+
+  const groupedDataByMonth = groupedByMonth(tableData);
+  */
+
   return (
     <article
       className='max-w-[1440px] w-full text-2xl text-center mx-auto'>
       <style>{customStyle}</style>
-      <p className='text-4xl font-bold text-left mb-10'>{table}</p>
-      <button onClick={() => console.log(tableData)}>check data</button>
+      {/* <button onClick={() => console.log(tableData)}>check data</button> */}
       <table className='w-full table-auto'>
         <thead className='bg-yellow-300'>
           <tr>
