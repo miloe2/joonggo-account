@@ -9,6 +9,9 @@ const menu = [
 const SideMenu = ({ width }: { width: Number }) => {
   const { table, setTable } = useAppStore();
   const handleMenu = (title: string) => {
+    // if(title === '통계') {
+    //   return;
+    // }
     setTable(title);
   };
 

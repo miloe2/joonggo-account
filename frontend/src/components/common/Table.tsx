@@ -20,28 +20,6 @@ const tableMenu = [
 ];
 const menuWidth = [5, 10, 20, 10, 20, 20, 20];
 
-//   pendingChanges = [
-//     {
-//         "id": "temp-1744257706123",
-//         "key": "product",
-//         "value": " 세탁기 판매"
-//     },
-//     {
-//         "id": "temp-1744257706123",
-//         "key": "price",
-//         "value": "20,000"
-//     },
-//     {
-//         "id": "67cea30aaa6ee6cdcf10b5f3",
-//         "key": "contact",
-//         "value": "010-1111-2222"
-//     }
-//     {
-//         "id": "67cea30aaa6ee6cdcf10b5f3",
-//         "key": "price",
-//         "value": "20000"
-//     }
-// ]
 const customStyle = `
 input {
   padding: 12px 0;
@@ -53,7 +31,6 @@ input {
 1-1. 월 단위 devider (sticky?)
 2. 매출/매입/지출로 보여주기
 3. 캐싱하기 / 렌더링 최적화
-
  */
 const Table = ({ tableData }: { tableData: TableData[] }) => {
   const { table, updateTableData, addTableRow, queueChange, clearPendingChanges } = useAppStore();
@@ -151,22 +128,6 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
     clearPendingChanges();
   };
 
-  /*
-  // 월별로 나누기 위한 코드 (미사용)
-  const groupedByMonth = (rawData: TableData[]) => {
-    const groups: Record<string, TableData[]> = {};
-    rawData.forEach((item) => {
-      const date = new Date(item.saleDate);
-      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(item);
-    })
-    return groups;
-  };
-
-  const groupedDataByMonth = groupedByMonth(tableData);
-  */
-
   // useEffect(() => {
   //   const interval = setInterval(() => {
   //     autoDataSave();
@@ -177,6 +138,11 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
   //   return () => clearInterval(interval);
   // }, []);
 
+  const tableColor: Record<string, string> = {
+    '매출': 'bg-yellow-300',
+    '지출': 'bg-blue-300',
+    '매입': 'bg-green-300',
+  }
 
   return (
     <article
@@ -184,7 +150,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
       <style>{customStyle}</style>
       {/* <button onClick={() => console.log(tableData)}>check data</button> */}
       <table className='w-full table-auto'>
-        <thead className='bg-yellow-300'>
+        <thead className={tableColor[table]}>
           <tr>
             {
               tableMenu.map((item) => (
@@ -205,15 +171,17 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
             tableData.map((item, index) => (
               <tr
                 key={item._id}
-                className='bg-red-00 border-y-2 border-zinc-300'
+                className={`${index % 2 === 1? 'bg-zinc-100': ''} border-y-2 border-zinc-300`}
               >
-                <td className='border-r-2 border-zinc-300'>{index + 1}
+                <td className='border-r-2 border-zinc-300'>
+                  {index + 1}
                   {/* {item._id} */}
                 </td>
                 <td className='border-r-2 border-zinc-300'>
                   <div className="flex items-center justify-center">
                     <input
                       type="date"
+                      className={`${index % 2 === 1? 'bg-zinc-100': ''}`}
                       value={item.saleDate.slice(0, 10)}
                       onChange={(e) => handleUpdate(item._id, 'saleDate', e.target.value)}
                     />
@@ -221,21 +189,21 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
                 </td>
                 <td className='border-r-2 border-zinc-300'>
                   <input
-                    className='w-full px-2'
+                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-2`}
                     type="text"
                     onChange={(e) => handleUpdate(item._id, 'product', e.target.value)}
                     value={item.product ?? ""} />
                 </td>
                 <td className='border-r-2 border-zinc-300'>
                   <input
-                    className='w-full px-2'
+                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-2`}
                     type="text"
                     onChange={(e) => handleUpdate(item._id, 'price', formatPriceNumber(e.target.value))}
                     value={formatPriceNumber(item.price as number) ?? ""} />
                 </td>
                 <td className='border-r-2 border-zinc-300'>
                   <input
-                    className='w-full px-2'
+                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-2`}
                     type="tel"
                     value={item.contact ?? ""}
                     onChange={(e) =>
@@ -244,7 +212,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
                   /></td>
                 <td >
                   <input
-                    className='w-full px-2'
+                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-2`}
                     type="text"
                     onChange={(e) => handleUpdate(item._id, 'address', e.target.value)}
                     value={item.address ?? ""} />
@@ -264,3 +232,18 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
 
 export default Table;
 
+/*
+// 월별로 나누기 위한 코드 (미사용)
+const groupedByMonth = (rawData: TableData[]) => {
+  const groups: Record<string, TableData[]> = {};
+  rawData.forEach((item) => {
+    const date = new Date(item.saleDate);
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item);
+  })
+  return groups;
+};
+
+const groupedDataByMonth = groupedByMonth(tableData);
+*/
