@@ -11,13 +11,11 @@ exports.getSales = async (req, res) => {
     if (year && month) {
       const numericYear = (year);
       const numericMonth = (month);
-      // const numericYear = parseInt(year);
-      // const numericMonth = parseInt(month);
       const startDate = new Date(numericYear, numericMonth - 1, 1);
       const endDate = new Date(numericYear, numericMonth, 1);
       filter.saleDate = { $gte: startDate, $lt: endDate };
     }
-    console.log(filter);
+    // console.log(filter);
     const sales = await Sales.find(filter).sort({ "saleDate": 1 });
     res.status(200).json(sales);
   } catch (error) {
@@ -114,6 +112,45 @@ exports.deleteSale = async (req, res) => {
       updatedSale,
     });
 
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+exports.getMonthlyCategorySummary = async (req, res) => {
+  try {
+    const result = await Sales.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$saleDate" },
+            month: { $month: "$saleDate" },
+            category: "$category",
+          },
+          total: { $sum: "$price" },
+        },
+      },
+      {
+        $group: {
+          _id: { year: "$_id.year", month: "$_id.month" },
+          categories: {
+            $push: {
+              category: "$_id.category",
+              total: "$total",
+            },
+          },
+        },
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1,
+        },
+      },
+    ]);
+
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
