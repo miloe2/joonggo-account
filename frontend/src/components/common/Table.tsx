@@ -146,11 +146,11 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
 
   return (
     <article
-      className='max-w-[1440px] w-full text-2xl text-center mx-auto'>
+      className='w-full text-2xl text-center mx-auto'>
       <style>{customStyle}</style>
       {/* <button onClick={() => console.log(tableData)}>check data</button> */}
       <table className='w-full table-auto'>
-        <thead className={tableColor[table]}>
+        <thead className={`${tableColor[table]} sticky top-10`}>
           <tr>
             {
               tableMenu.map((item) => (
@@ -171,7 +171,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
             tableData.map((item, index) => (
               <tr
                 key={item._id}
-                className={`${index % 2 === 1? 'bg-zinc-100': ''} border-y-2 border-zinc-300`}
+                className={`${index % 2 === 1? 'bg-zinc-100': ''} border-y-2 border-zinc-300 `}
               >
                 <td className='border-r-2 border-zinc-300'>
                   {index + 1}

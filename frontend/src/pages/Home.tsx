@@ -17,7 +17,7 @@ const Home = () => {
   }, [table, yearMonth.year, yearMonth.month]);
 
   return (
-    <div className='w-full h-full pt-10'>
+    <div className='w-full h-full py-10 max-w-[1440px] mx-auto'>
       <p className='text-4xl font-bold text-left'>{table}</p>
       <MonthSelector yearMonth={yearMonth} onChange={setYearMonth} />
       <Table tableData={tableData} />

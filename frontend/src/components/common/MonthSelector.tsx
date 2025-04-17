@@ -1,8 +1,15 @@
 import long_arrow from '../../assets/icons/long_arrow.svg'
+interface YearMonth {
+  year: number;
+  month: number;
+}
 
+interface MonthSelectorProps {
+  yearMonth: YearMonth;
+  onChange: (value: YearMonth) => void;
+}
 
-//@ts-ignore
-const MonthSelector = ({ yearMonth, onChange }) => {
+const MonthSelector = ({ yearMonth, onChange }: MonthSelectorProps) => {
   const { year, month } = yearMonth;
 
   const handleMonthBtn = (type: 'prev' | 'next') => {

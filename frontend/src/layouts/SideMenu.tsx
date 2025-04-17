@@ -1,17 +1,22 @@
+import { useState } from 'react';
 import useAppStore from '../store/useAppStore';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const menu = [
-  { title: '매출', path: '/' },
-  { title: '매입', path: '/' },
-  { title: '지출', path: '/' },
-  { title: '통계', path: '/' },
-]
+const menu: Record<string, string> = {
+  '매출': '/',
+  '매입': '/',
+  '지출': '/',
+  '통계': '/statistics',
+}
 const SideMenu = ({ width }: { width: Number }) => {
+  const navigate = useNavigate();
   const { table, setTable } = useAppStore();
+  const [activeMenu, setActiveMenu] = useState<string>(table);
   const handleMenu = (title: string) => {
-    // if(title === '통계') {
-    //   return;
-    // }
+    navigate(menu[title])
+    setActiveMenu(title);
+
+    if (title === '통계') return;
     setTable(title);
   };
 
@@ -22,15 +27,15 @@ const SideMenu = ({ width }: { width: Number }) => {
     >
       <ul className='text-4xl space-y-8'>
         {
-          menu.map((item, index) => (
+          Object.keys(menu).map((item, index) => (
             <li
               key={index}
-              onClick={() => handleMenu(item.title)}
+              onClick={() => handleMenu(item)}
               className={`
-              ${table === item.title ? 'text-blue-500 font-bold bg-blue-500' : 'text-black bg-black'}
+              ${activeMenu === item ? 'text-blue-500 font-bold bg-blue-500' : 'text-black bg-black'}
               cursor-pointer 
               `}
-            >{item.title}</li>
+            >{item}</li>
           ))
         }
       </ul>
