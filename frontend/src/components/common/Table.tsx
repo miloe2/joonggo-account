@@ -1,6 +1,6 @@
-import { useState, Fragment } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import useAppStore from '../../store/useAppStore'
-import { TableData } from '../../types/types';
+import { PendingChange, TableData } from '../../types/types';
 import { formatPhoneNumber, formatPriceNumber } from '../../utils/utils';
 import { fetchAddData, fetchUpdateData } from '../../api';
 
@@ -54,11 +54,16 @@ input {
 2. 매출/매입/지출로 보여주기
 3. 캐싱하기 / 렌더링 최적화
 
-setInterval(5000) 저장 처리 하기
-
  */
 const Table = ({ tableData }: { tableData: TableData[] }) => {
-  const { table, updateTableData, addTableRow, pendingChanges, queueChange, clearPendingChanges } = useAppStore();
+  const { table, updateTableData, addTableRow, queueChange, clearPendingChanges } = useAppStore();
+  const pendingChanges = useAppStore((state) => state.pendingChanges);
+  const pendingRef = useRef(pendingChanges);
+
+  useEffect(() => {
+    pendingRef.current = pendingChanges; // 항상 최신 상태로 갱신
+  }, [pendingChanges]);
+
 
   const handleUpdate = (id: string, key: keyof TableData, value: string | number | boolean) => {
     updateTableData(id, key, value);
@@ -97,9 +102,9 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
   };
 
   // pendingChanges를 그룹핑함
-  const groupingId = () => {
+  const groupingId = (pendingList: PendingChange[]) => {
     const grouped = new Map<string, Partial<TableData>>();
-    pendingChanges.forEach((item) => {
+    pendingList.forEach((item) => {
       if (!grouped.has(item.id)) {
         grouped.set(item.id, { _id: item.id });
       }
@@ -115,35 +120,35 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
     updateTableData(temp_id, '_id', real_id)
   }
 
-  const autoDataSave = () => {
-    if (pendingChanges.length === 0) return;
-    const groupedId = groupingId();
-    // grouping 된 Map을 객체로 변환환
-    groupedId.forEach(async (mapItem) => {
+  const autoDataSave = async () => {
+    console.log('autoDataSave 실행!');
+    if (pendingRef.current.length === 0) return;
+    console.log('변화가 있어서 저장합니다. ');
+    const groupedId = groupingId(pendingRef.current);
+
+    const tasks = Array.from(groupedId.values()).map(async (mapItem) => {
       const newData = createInitialTableData(table, false, mapItem);
-      console.log(newData, 'newData')
       try {
         if (mapItem._id?.startsWith('temp')) {
           const { _id, ...dataWithoutId } = newData;
-
-          // console.log('fetchAddData', dataWithoutId);
           const rsp = await fetchAddData(dataWithoutId);
-          console.log(rsp)
-          if (rsp?.status === 200 || rsp?.status === 201) {
+          if (rsp.status === 201) {
             changeRealId(_id, rsp.data._id);
-            clearPendingChanges();
           }
-
         } else {
           const rsp = await fetchUpdateData(newData);
-          if (rsp?.status === 200 || rsp?.status === 201) {
-            clearPendingChanges();
+          if (rsp.status !== 200) {
+            console.error('업데이트 실패', rsp.data._id);
           }
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
-    })
+
+    });
+    await Promise.all(tasks);
+    console.log(`[autosave] ${groupedId.size}건 저장 시도 완료`);
+    clearPendingChanges();
   };
 
   /*
@@ -161,6 +166,17 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
 
   const groupedDataByMonth = groupedByMonth(tableData);
   */
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     autoDataSave();
+  //     // fetchAddData 또는 fetchUpdateData 호출
+
+  //   }, 3000);
+
+  //   return () => clearInterval(interval);
+  // }, []);
+
 
   return (
     <article

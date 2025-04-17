@@ -14,7 +14,6 @@ export const formatPhoneNumber = (value: string) => {
 
 export const formatPriceNumber = (value: string | number) => {
   // 문자열이면 숫자만 남기고 파싱
-  console.log(value)
   const numberValue = typeof value === 'string' 
     ? parseInt(value.replace(/[^0-9]/g, ''), 10)
     : value;
