@@ -224,8 +224,20 @@ const Table = ({ tableData, total }: { tableData: TableData[], total: number }) 
           }
         </tbody>
       </table>
-      <div className='w-full flex flex-col'>
-        <button className='bg-red-300' onClick={() => addTempRow()}>추가하기</button>
+      <div className="w-full flex justify-center mt-6">
+        <button
+          onClick={addTempRow}
+          className="group flex items-center space-x-2 bg-blue-500 hover:bg-blue-600 text-white text-xl font-bold py-4 px-8 rounded-xl shadow-md transition duration-200 ease-in-out"
+        >
+          <span className='group-hover:rotate-45 transition-transform'>
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </span>
+          <p>
+            새 항목 추가하기
+          </p>
+        </button>
         {/* <button className='bg-blue-300' onClick={() => autoDataSave()}>autoSave</button> */}
       </div>
 
