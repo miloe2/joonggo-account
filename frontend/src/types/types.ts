@@ -14,10 +14,16 @@ type NewTableData = Omit<TableData, "_id">;
 
 export interface PendingChange {
   id: string;
-  category : string;
+  category: string;
   key: keyof TableData;
   value: any;
 }
+
+export interface TotalData {
+  categories: { category: string, total: number }[];
+  _id: { year: number, month: number };
+}
+
 
 export interface UseAppStore {
   table: string;
@@ -35,6 +41,7 @@ export interface UseAppStore {
 
 export interface ApiTypes {
   fetchData: ({ table, year, month }: { table: string, year: number, month: number }) => Promise<TableData[]>;
+  fetchTotalData: () => Promise<any>;
   // fetchData: (param: Record<string, string>) => Promise<TableData[]>;
   fetchAddData: (newData: NewTableData) => Promise<AxiosResponse<{ _id: string }>>;
   fetchUpdateData: (updateData: TableData) => Promise<AxiosResponse>;

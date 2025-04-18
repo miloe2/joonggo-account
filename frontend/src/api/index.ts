@@ -23,6 +23,20 @@ export const fetchData: ApiTypes["fetchData"] = async ({table, year, month}) => 
   }
 };
 
+
+// 모든 통계 가져오기
+export const fetchTotalData: ApiTypes["fetchTotalData"] = async () => {
+  console.log("fetchTotalData", "api start######");
+  try {
+    const rsp = await axios.get(`${BASE_URL}/api/sales/total`);
+    console.log("API Response:", rsp.data);
+    return rsp.data;
+  } catch (error) {
+    console.error("오류 발생!", error);
+  }
+};
+
+
 /** process
 - 사용자입력
 - pendignChanges { id, key, value } 저장

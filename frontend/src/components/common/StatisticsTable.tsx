@@ -1,100 +1,8 @@
-import React, { useEffect } from 'react'
-const rst = [
-  {
-      "_id": {
-          "year": 2024,
-          "month": 3
-      },
-      "categories": [
-          {
-              "category": "매출",
-              "total": 200
-          },
-          {
-              "category": "계",
-              "total": 200
-          }
-      ]
-  },
-  {
-      "_id": {
-          "year": 2024,
-          "month": 4
-      },
-      "categories": [
-          {
-              "category": "매출",
-              "total": 900333
-          },
-          {
-              "category": "계",
-              "total": 900333
-          }
-      ]
-  },
-  {
-      "_id": {
-          "year": 2025,
-          "month": 2
-      },
-      "categories": [
-          {
-              "category": "매출",
-              "total": 20000
-          },
-          {
-              "category": "계",
-              "total": 20000
-          }
-      ]
-  },
-  {
-      "_id": {
-          "year": 2025,
-          "month": 3
-      },
-      "categories": [
-          {
-              "category": "매출",
-              "total": 124457
-          },
-          {
-              "category": "계",
-              "total": 124457
-          }
-      ]
-  },
-  {
-      "_id": {
-          "year": 2025,
-          "month": 4
-      },
-      "categories": [
-          {
-              "category": "지출",
-              "total": 30000
-          },
-          {
-              "category": "매출",
-              "total": 202027349
-          },
-          {
-              "category": "계",
-              "total": 201997349
-          }
-      ]
-  }
-];
+import { TotalData } from '../../types/types';
+
 const CATEGORY_LIST = ['매출', '매입', '지출', '계'];
 const menuWidth = [20, 20, 20, 20];
-
-const StatisticsTable = () => {
-
-  // useEffect(() => {
-  //   rst = api호출
-  //   total = rst.reduce( retrun sum ...)
-  //   addTotalList = [ ...rst, {"category" :"계", "total": total }]
-  // })
+const StatisticsTable = ({ totalData }: { totalData: TotalData[] }) => {
 
   return (
     <article
@@ -116,7 +24,7 @@ const StatisticsTable = () => {
         </thead>
         <tbody>
           {
-            rst.map((list, index) => (
+            totalData.map((list, index) => (
               <tr
                 key={index}
                 className={`${index % 2 === 1 ? 'bg-zinc-100' : ''} border-y-2 border-zinc-300`}
