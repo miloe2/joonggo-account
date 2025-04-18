@@ -22,7 +22,7 @@ const SideMenu = ({ width }: { width: Number }) => {
 
   return (
     <aside
-      className='bg-blue-00 w-full h-svh fixed p-10'
+      className='bg-blue-00 w-full h-svh fixed  pt-36'
       style={{ maxWidth: `${width}px` }}
     >
       <ul className='text-4xl space-y-8'>
@@ -30,12 +30,13 @@ const SideMenu = ({ width }: { width: Number }) => {
           Object.keys(menu).map((item, index) => (
             <li
               key={index}
-              onClick={() => handleMenu(item)}
               className={`
-              ${activeMenu === item ? 'text-blue-500 font-bold bg-blue-500' : 'text-black bg-black'}
-              cursor-pointer 
+              ${activeMenu === item ? 'text-blue-500 font-bold bg-blue-00' : 'text-black bg-lack'}
               `}
-            >{item}</li>
+            ><span
+              onClick={() => handleMenu(item)}
+              className='bg-red-00 px-10 cursor-pointer'
+            >{item}</span> </li>
           ))
         }
       </ul>
