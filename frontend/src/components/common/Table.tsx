@@ -32,7 +32,7 @@ input {
 2. 매출/매입/지출로 보여주기
 3. 캐싱하기 / 렌더링 최적화
  */
-const Table = ({ tableData }: { tableData: TableData[] }) => {
+const Table = ({ tableData, total }: { tableData: TableData[], total: number }) => {
   const { table, updateTableData, addTableRow, queueChange, clearPendingChanges } = useAppStore();
   const pendingChanges = useAppStore((state) => state.pendingChanges);
   const pendingRef = useRef(pendingChanges);
@@ -145,11 +145,14 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
 
   return (
     <article
-      className='w-full text-2xl text-center mx-auto'>
+      className='w-full text-2xl text-center mx-auto relative mt-10'>
+      <div className='absolute -top-10 right-0'>
+        <span className='font-semibold'>{table}:</span> {total.toLocaleString()}원</div>
+
       <style>{customStyle}</style>
       {/* <button onClick={() => console.log(tableData)}>check data</button> */}
       <table className='w-full table-fixed'>
-        <thead className={`${tableColor[table]} sticky top-10`}>
+        <thead className={`${tableColor[table]} sticky top-0`}>
           <tr>
             {
               tableMenu.map((item) => (
@@ -223,8 +226,10 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
       </table>
       <div className='w-full flex flex-col'>
         <button className='bg-red-300' onClick={() => addTempRow()}>추가하기</button>
-        <button className='bg-blue-300' onClick={() => autoDataSave()}>autoSave</button>
+        {/* <button className='bg-blue-300' onClick={() => autoDataSave()}>autoSave</button> */}
       </div>
+
+
     </article>
   )
 }
