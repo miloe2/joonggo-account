@@ -126,29 +126,77 @@ exports.getMonthlyCategorySummary = async (req, res) => {
           _id: {
             year: { $year: "$saleDate" },
             month: { $month: "$saleDate" },
-            category: "$category",
+            category: "$category"
           },
-          total: { $sum: "$price" },
-        },
+          total: { $sum: "$price" }
+        }
       },
       {
         $group: {
-          _id: { year: "$_id.year", month: "$_id.month" },
+          _id: {
+            year: "$_id.year",
+            month: "$_id.month"
+          },
           categories: {
             $push: {
               category: "$_id.category",
-              total: "$total",
-            },
+              total: "$total"
+            }
           },
-        },
+          // "매출", "매입", "지출"을 개별로 분리해 계산할 준비
+          sales: {
+            $sum: {
+              $cond: [{ $eq: ["$_id.category", "매출"] }, "$total", 0]
+            }
+          },
+          purchase: {
+            $sum: {
+              $cond: [{ $eq: ["$_id.category", "매입"] }, "$total", 0]
+            }
+          },
+          expense: {
+            $sum: {
+              $cond: [{ $eq: ["$_id.category", "지출"] }, "$total", 0]
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          net: {
+            $subtract: [
+              "$sales",
+              { $add: ["$purchase", "$expense"] }
+            ]
+          }
+        }
+      },
+      {
+        $addFields: {
+          categories: {
+            $concatArrays: [
+              "$categories",
+              [{ category: "계", total: "$net" }]
+            ]
+          }
+        }
+      },
+      {
+        $project: {
+          sales: 0,
+          purchase: 0,
+          expense: 0,
+          net: 0
+        }
       },
       {
         $sort: {
           "_id.year": 1,
-          "_id.month": 1,
-        },
-      },
+          "_id.month": 1
+        }
+      }
     ]);
+
 
     res.status(200).json(result);
   } catch (error) {
