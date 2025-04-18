@@ -18,7 +18,7 @@ const tableMenu = [
     menuList: ['번호', '일자', '인건비내용', '인건비', '연락처', '주소']
   },
 ];
-const menuWidth = [5, 10, 20, 10, 20, 20, 20];
+const menuWidth = [5, 10, 20, 10, 10, 15];
 
 const customStyle = `
 input {
@@ -149,7 +149,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
       className='w-full text-2xl text-center mx-auto'>
       <style>{customStyle}</style>
       {/* <button onClick={() => console.log(tableData)}>check data</button> */}
-      <table className='w-full table-auto'>
+      <table className='w-full table-fixed'>
         <thead className={`${tableColor[table]} sticky top-10`}>
           <tr>
             {
@@ -189,21 +189,21 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
                 </td>
                 <td className='border-r-2 border-zinc-300'>
                   <input
-                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-2`}
+                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-4`}
                     type="text"
                     onChange={(e) => handleUpdate(item._id, 'product', e.target.value)}
                     value={item.product ?? ""} />
                 </td>
                 <td className='border-r-2 border-zinc-300'>
                   <input
-                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-2`}
+                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-4 text-right`}
                     type="text"
                     onChange={(e) => handleUpdate(item._id, 'price', formatPriceNumber(e.target.value))}
                     value={formatPriceNumber(item.price as number) ?? ""} />
                 </td>
                 <td className='border-r-2 border-zinc-300'>
                   <input
-                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-2`}
+                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-4`}
                     type="tel"
                     value={item.contact ?? ""}
                     onChange={(e) =>
@@ -212,7 +212,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
                   /></td>
                 <td >
                   <input
-                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-2`}
+                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-4`}
                     type="text"
                     onChange={(e) => handleUpdate(item._id, 'address', e.target.value)}
                     value={item.address ?? ""} />
