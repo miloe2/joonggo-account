@@ -14,6 +14,7 @@ type NewTableData = Omit<TableData, "_id">;
 
 export interface PendingChange {
   id: string;
+  category : string;
   key: keyof TableData;
   value: any;
 }

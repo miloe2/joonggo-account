@@ -42,14 +42,13 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
   }, [pendingChanges]);
 
 
-  const handleUpdate = (id: string, key: keyof TableData, value: string | number | boolean) => {
-    updateTableData(id, key, value);
-    queueChange({ id, key, value });
+  const handleUpdate = (item: TableData, key: keyof TableData, value: string | number | boolean) => {
+    updateTableData(item._id, key, value);
+    queueChange({ id: item._id, category: item.category, key, value });
   };
 
 
   const createInitialTableData = (
-    category: string,
     withTempId: boolean = true,
     overrides: Partial<TableData> = {}
   ): TableData => {
@@ -61,7 +60,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
 
     return {
       _id: withTempId ? `temp-${Date.now()}` : "",
-      category,
+      category: overrides.category ?? "",
       product: undefined,
       price: undefined,
       address: undefined,
@@ -73,7 +72,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
   };
 
   const addTempRow = () => {
-    const initValue = createInitialTableData(table)
+    const initValue = createInitialTableData(true, { category: table })
     addTableRow(initValue);
     console.log(pendingChanges)
   };
@@ -83,7 +82,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
     const grouped = new Map<string, Partial<TableData>>();
     pendingList.forEach((item) => {
       if (!grouped.has(item.id)) {
-        grouped.set(item.id, { _id: item.id });
+        grouped.set(item.id, { _id: item.id, category: item.category });
       }
       const current = grouped.get(item.id)!;
       current[item.key] = item.value;
@@ -104,7 +103,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
     const groupedId = groupingId(pendingRef.current);
 
     const tasks = Array.from(groupedId.values()).map(async (mapItem) => {
-      const newData = createInitialTableData(table, false, mapItem);
+      const newData = createInitialTableData(false, mapItem);
       try {
         if (mapItem._id?.startsWith('temp')) {
           const { _id, ...dataWithoutId } = newData;
@@ -171,7 +170,7 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
             tableData.map((item, index) => (
               <tr
                 key={item._id}
-                className={`${index % 2 === 1? 'bg-zinc-100': ''} border-y-2 border-zinc-300 `}
+                className={`${index % 2 === 1 ? 'bg-zinc-100' : ''} border-y-2 border-zinc-300 `}
               >
                 <td className='border-r-2 border-zinc-300'>
                   {index + 1}
@@ -181,40 +180,40 @@ const Table = ({ tableData }: { tableData: TableData[] }) => {
                   <div className="flex items-center justify-center">
                     <input
                       type="date"
-                      className={`${index % 2 === 1? 'bg-zinc-100': ''}`}
+                      className={`${index % 2 === 1 ? 'bg-zinc-100' : ''}`}
                       value={item.saleDate.slice(0, 10)}
-                      onChange={(e) => handleUpdate(item._id, 'saleDate', e.target.value)}
+                      onChange={(e) => handleUpdate(item, 'saleDate', e.target.value)}
                     />
                   </div>
                 </td>
                 <td className='border-r-2 border-zinc-300'>
                   <input
-                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-4`}
+                    className={`${index % 2 === 1 ? 'bg-zinc-100' : ''} w-full px-4`}
                     type="text"
-                    onChange={(e) => handleUpdate(item._id, 'product', e.target.value)}
+                    onChange={(e) => handleUpdate(item, 'product', e.target.value)}
                     value={item.product ?? ""} />
                 </td>
                 <td className='border-r-2 border-zinc-300'>
                   <input
-                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-4 text-right`}
+                    className={`${index % 2 === 1 ? 'bg-zinc-100' : ''} w-full px-4 text-right`}
                     type="text"
-                    onChange={(e) => handleUpdate(item._id, 'price', formatPriceNumber(e.target.value))}
+                    onChange={(e) => handleUpdate(item, 'price', formatPriceNumber(e.target.value))}
                     value={formatPriceNumber(item.price as number) ?? ""} />
                 </td>
                 <td className='border-r-2 border-zinc-300'>
                   <input
-                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-4`}
+                    className={`${index % 2 === 1 ? 'bg-zinc-100' : ''} w-full px-4`}
                     type="tel"
                     value={item.contact ?? ""}
                     onChange={(e) =>
-                      handleUpdate(item._id, 'contact', formatPhoneNumber(e.target.value))
+                      handleUpdate(item, 'contact', formatPhoneNumber(e.target.value))
                     }
                   /></td>
                 <td >
                   <input
-                    className={`${index % 2 === 1? 'bg-zinc-100': ''} w-full px-4`}
+                    className={`${index % 2 === 1 ? 'bg-zinc-100' : ''} w-full px-4`}
                     type="text"
-                    onChange={(e) => handleUpdate(item._id, 'address', e.target.value)}
+                    onChange={(e) => handleUpdate(item, 'address', e.target.value)}
                     value={item.address ?? ""} />
                 </td>
               </tr>
