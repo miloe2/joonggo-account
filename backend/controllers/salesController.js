@@ -1,5 +1,7 @@
 const Sales = require("../models/Sales");
 
+const cache = {};
+
 // [GET] 데이터 조회
 exports.getSales = async (req, res) => {
   try {
@@ -119,6 +121,11 @@ exports.deleteSale = async (req, res) => {
 
 
 exports.getMonthlyCategorySummary = async (req, res) => {
+  if (cache.total) {
+    console.log('cache 데이터로 드립니다. ', cache.total)
+    return res.status(200).json(cache.total); // ✅ 캐시 반환
+  }
+
   try {
     const result = await Sales.aggregate([
       {
@@ -196,7 +203,8 @@ exports.getMonthlyCategorySummary = async (req, res) => {
         }
       }
     ]);
-
+    cache.total = result;
+    setTimeout(() => delete cache.sales, 600 * 1000); // 10초 후 캐시 삭제
 
     res.status(200).json(result);
   } catch (error) {
