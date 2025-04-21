@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import StatisticsTable from '../components/common/StatisticsTable';
 import { fetchTotalData } from '../api';
 import { TotalData } from '../types/types';

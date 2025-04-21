@@ -1,5 +1,3 @@
-import React from 'react'
-
 const HomeLoading = () => {
   const skeletonWidth = [
     [50, 50, 50],

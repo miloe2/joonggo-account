@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import useAppStore from '../store/useAppStore';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const menu: Record<string, string> = {
   '매출': '/',
