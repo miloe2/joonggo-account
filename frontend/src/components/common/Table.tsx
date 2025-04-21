@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import useAppStore from '../../store/useAppStore'
 import { PendingChange, TableData } from '../../types/types';
 import { formatPhoneNumber, formatPriceNumber } from '../../utils/utils';
@@ -127,15 +127,15 @@ const Table = ({ tableData, total }: { tableData: TableData[], total: number }) 
     clearPendingChanges();
   };
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     autoDataSave();
-  //     // fetchAddData 또는 fetchUpdateData 호출
+  useEffect(() => {
+    const interval = setInterval(() => {
+      autoDataSave();
+      // fetchAddData 또는 fetchUpdateData 호출
 
-  //   }, 3000);
+    }, 10000);
 
-  //   return () => clearInterval(interval);
-  // }, []);
+    return () => clearInterval(interval);
+  }, []);
 
   const tableColor: Record<string, string> = {
     '매출': 'bg-yellow-300',
