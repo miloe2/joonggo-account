@@ -8,7 +8,7 @@ const app = express();
 
 // Middleware 설정
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: '*' }));
 
 connectDB();
 
@@ -20,5 +20,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log('8000!');
+  console.log(`Server is running on port ${PORT}`);
 });
