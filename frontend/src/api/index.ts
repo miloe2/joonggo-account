@@ -1,8 +1,8 @@
 import axios from "axios";
 import { ApiTypes } from "../types/types";
 
-// const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-const BASE_URL = "http://172.20.10.3:5000";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+// const BASE_URL = "http://172.20.10.3:5000";
 
 
 // 모든 데이터 가져오기
