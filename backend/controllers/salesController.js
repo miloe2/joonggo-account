@@ -17,7 +17,7 @@ exports.getSales = async (req, res) => {
       const endDate = new Date(numericYear, numericMonth, 1);
       filter.saleDate = { $gte: startDate, $lt: endDate };
     }
-    // console.log(filter);
+    console.log(filter);
     const sales = await Sales.find(filter).sort({ "saleDate": 1 });
     res.status(200).json(sales);
   } catch (error) {
@@ -204,7 +204,7 @@ exports.getMonthlyCategorySummary = async (req, res) => {
       }
     ]);
     cache.total = result;
-    setTimeout(() => delete cache.sales, 600 * 1000); // 10초 후 캐시 삭제
+    setTimeout(() => delete cache.sales, 60 * 1000); // 60초 후 캐시 삭제
 
     res.status(200).json(result);
   } catch (error) {
