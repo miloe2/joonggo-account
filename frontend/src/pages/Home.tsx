@@ -5,6 +5,7 @@ import { useEffect, useState, useMemo } from 'react';
 import MonthSelector from '../components/common/MonthSelector';
 import { useQuery } from '@tanstack/react-query';
 import { TableData } from '../types/types';
+import HomeLoading from './HomeLoading';
 
 const Home = () => {
   const { table, setTableData, tableData } = useAppStore();
@@ -19,14 +20,14 @@ const Home = () => {
 
   useEffect(() => {
     setTableData(data as TableData[]);
-  },[data]);
+  }, [data]);
 
   const total = useMemo(() => {
     if (!data) return 0;
     return data?.reduce((acc, curr) => acc + (curr.price ?? 0), 0);
   }, [data]);
 
-  if (isLoading) return <div>불러오는 중...</div>;
+  if (isLoading) return <HomeLoading />;
 
 
   return (
