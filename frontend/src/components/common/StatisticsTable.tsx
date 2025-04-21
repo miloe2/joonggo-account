@@ -7,7 +7,6 @@ const StatisticsTable = ({ totalData }: { totalData: TotalData[] }) => {
   return (
     <article
       className='max-w-[1440px] w-full text-2xl text-center mx-auto'>
-      {/* <style>{customStyle}</style> */}
       <table className='w-full table-fixed'>
         <thead className='bg-violet-300'>
           <tr >
@@ -24,7 +23,7 @@ const StatisticsTable = ({ totalData }: { totalData: TotalData[] }) => {
         </thead>
         <tbody>
           {
-            totalData.map((list, index) => (
+            totalData?.map((list, index) => (
               <tr
                 key={index}
                 className={`${index % 2 === 1 ? 'bg-zinc-100' : ''} border-y-2 border-zinc-300`}
