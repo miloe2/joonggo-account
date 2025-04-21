@@ -170,7 +170,7 @@ const Table = ({ tableData, total }: { tableData: TableData[], total: number }) 
         </thead>
         <tbody>
           {
-            tableData.map((item, index) => (
+            tableData?.map((item, index) => (
               <tr
                 key={item._id}
                 className={`${index % 2 === 1 ? 'bg-zinc-100' : ''} border-y-2 border-zinc-300 `}
