@@ -145,12 +145,12 @@ const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[]
     clearPendingChanges();
   };
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     autoDataSave();
-  //   }, 5000);
-  //   return () => clearInterval(interval);
-  // }, []);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      autoDataSave();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const tableColor: Record<string, string> = {
     '매출': 'bg-yellow-300',
