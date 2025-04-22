@@ -4,7 +4,6 @@ import { fetchData } from '../api';
 import { useEffect, useState, useMemo } from 'react';
 import MonthSelector from '../components/common/MonthSelector';
 import { useQuery } from '@tanstack/react-query';
-import { DataWithClientKey } from '../types/types';
 import HomeLoading from './HomeLoading';
 
 const Home = () => {

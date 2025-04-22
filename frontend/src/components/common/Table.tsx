@@ -77,7 +77,6 @@ const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[]
       .toISOString()
       .slice(0, 10);
 
-    console.log((today).toISOString())
     return {
       _id: generatedId,
       clientKey: generatedId,
@@ -95,7 +94,7 @@ const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[]
   const addTempRow = () => {
     const initValue = createInitialTableData(true, { category: table })
     addTableRow(initValue);
-    console.log(pendingChanges)
+    // console.log(pendingChanges);
   };
 
   // pendingChanges를 그룹핑함
@@ -118,9 +117,7 @@ const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[]
   }
 
   const autoDataSave = async () => {
-    console.log('autoDataSave 실행!');
     if (pendingRef.current.length === 0) return;
-    console.log('변화가 있어서 저장합니다. ');
     const groupedId = groupingId(pendingRef.current);
 
     const tasks = Array.from(groupedId.values()).map(async (mapItem) => {
@@ -151,8 +148,7 @@ const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[]
   // useEffect(() => {
   //   const interval = setInterval(() => {
   //     autoDataSave();
-  //   }, 2000);
-
+  //   }, 5000);
   //   return () => clearInterval(interval);
   // }, []);
 
@@ -169,7 +165,6 @@ const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[]
         <span className='font-semibold'>{table}:</span> {total.toLocaleString()}원</div>
 
       <style>{customStyle}</style>
-      {/* <button onClick={() => console.log(tableData)}>check data</button> */}
       <table className='w-full table-fixed'>
         <thead className={`${tableColor[table]} sticky top-0`}>
           <tr>
