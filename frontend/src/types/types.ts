@@ -22,16 +22,24 @@ export interface PendingChange {
 export interface TotalData {
   categories: { category: string, total: number }[];
   _id: { year: number, month: number };
+};
+
+export interface DataWithClientKey extends TableData {
+  clientKey: string;
 }
 
+export interface YearMonth {
+  year: number;
+  month: number;
+}
 
 export interface UseAppStore {
   table: string;
   setTable: (value: string) => void;
 
-  tableData: TableData[];
-  setTableData: (value: TableData[]) => void;
-  addTableRow: (value: TableData) => void;
+  tableData: DataWithClientKey[];
+  setTableData: (value: DataWithClientKey[]) => void;
+  addTableRow: (value: DataWithClientKey) => void;
   updateTableData: (id: string, key: keyof TableData, value: string | boolean | number) => void;
 
   pendingChanges: PendingChange[];

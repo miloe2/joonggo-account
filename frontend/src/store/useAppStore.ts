@@ -48,7 +48,6 @@ const useAppStore = create<UseAppStore>((set) => ({
     })),
   addTableRow: (dummy) =>
     set((state) => {
-      console.log('zustand start')
       const newTableData = [...state.tableData, dummy]
       return {
         tableData: newTableData,

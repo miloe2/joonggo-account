@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 import useAppStore from '../../store/useAppStore'
-import { PendingChange, TableData } from '../../types/types';
+import { PendingChange, TableData, DataWithClientKey, YearMonth } from '../../types/types';
 import { formatPhoneNumber, formatPriceNumber } from '../../utils/utils';
 import { fetchAddData, fetchUpdateData } from '../../api';
 
@@ -32,7 +32,7 @@ input {
 2. 매출/매입/지출로 보여주기
 3. 캐싱하기 / 렌더링 최적화
  */
-const Table = ({ tableData, total }: { tableData: TableData[], total: number }) => {
+const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[], yearMonth: YearMonth, total: number }) => {
   const { table, updateTableData, addTableRow, queueChange, clearPendingChanges } = useAppStore();
   const pendingChanges = useAppStore((state) => state.pendingChanges);
   const pendingRef = useRef(pendingChanges);
@@ -51,21 +51,42 @@ const Table = ({ tableData, total }: { tableData: TableData[], total: number }) 
   const createInitialTableData = (
     withTempId: boolean = true,
     overrides: Partial<TableData> = {}
-  ): TableData => {
+  ): DataWithClientKey => {
 
     if (typeof overrides.price === "string") {
       const onlyNumber = (overrides.price as string).replace(/[^0-9.-]/g, "");
       overrides.price = Number(onlyNumber);
     };
 
+    const generatedId = withTempId ? `temp-${Date.now()}` : "";
+    const today = new Date();
+    const todayDate = today.getDate();
+
+    // 해당 월과 연도인지 체크
+    const isSameMonth =
+      today.getFullYear() === yearMonth.year &&
+      today.getMonth() === yearMonth.month - 1;
+
+    // 사용할 날짜 객체
+    const baseDate = isSameMonth
+      ? today
+      : new Date(yearMonth.year, yearMonth.month - 1, todayDate);
+
+    // 한국 시간 기준 YYYY-MM-DD 형식으로 반환
+    const generatedDate = new Date(baseDate.getTime() + 9 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 10);
+
+    console.log((today).toISOString())
     return {
-      _id: withTempId ? `temp-${Date.now()}` : "",
+      _id: generatedId,
+      clientKey: generatedId,
       category: overrides.category ?? "",
       product: undefined,
       price: undefined,
       address: undefined,
       contact: undefined,
-      saleDate: new Date().toISOString(),
+      saleDate: generatedDate,
       isActive: false,
       ...overrides, // ✅ 덮어쓰기
     };
@@ -127,15 +148,13 @@ const Table = ({ tableData, total }: { tableData: TableData[], total: number }) 
     clearPendingChanges();
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      autoDataSave();
-      // fetchAddData 또는 fetchUpdateData 호출
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     autoDataSave();
+  //   }, 2000);
 
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   const tableColor: Record<string, string> = {
     '매출': 'bg-yellow-300',
@@ -172,12 +191,11 @@ const Table = ({ tableData, total }: { tableData: TableData[], total: number }) 
           {
             tableData?.map((item, index) => (
               <tr
-                key={item._id}
+                key={item.clientKey}
                 className={`${index % 2 === 1 ? 'bg-zinc-100' : ''} border-y-2 border-zinc-300 `}
               >
                 <td className='border-r-2 border-zinc-300'>
                   {index + 1}
-                  {/* {item._id} */}
                 </td>
                 <td className='border-r-2 border-zinc-300'>
                   <div className="flex items-center justify-center">

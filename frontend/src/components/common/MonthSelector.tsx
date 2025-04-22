@@ -1,8 +1,5 @@
 import long_arrow from '../../assets/icons/long_arrow.svg'
-interface YearMonth {
-  year: number;
-  month: number;
-}
+import { YearMonth } from '../../types/types';
 
 interface MonthSelectorProps {
   yearMonth: YearMonth;
