@@ -1,7 +1,10 @@
 const express = require("express");
+const apiKeyAuth = require('../middleware/apiKeyAuth')
 const { getSales, addSale, updateSale, deleteSale, getMonthlyCategorySummary } = require("../controllers/salesController");
 
 const router = express.Router();
+
+router.use(apiKeyAuth);
 
 router.get("/", getSales);
 router.get("/total", getMonthlyCategorySummary);

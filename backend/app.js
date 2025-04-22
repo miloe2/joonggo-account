@@ -8,7 +8,8 @@ const app = express();
 
 // Middleware 설정
 app.use(express.json());
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: 'https://joonggo-web.onrender.com' }));
+// app.use(cors({ origin: '*' }));
 
 connectDB();
 
