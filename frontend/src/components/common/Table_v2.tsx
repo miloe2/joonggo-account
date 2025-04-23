@@ -20,32 +20,31 @@ const tableMenu = [
 ];
 const menuWidth = [5, 10, 20, 10, 10, 15];
 
-const tableColor: Record<string, string> = {
-  '매출': 'bg-yellow-300',
-  '지출': 'bg-blue-300',
-  '매입': 'bg-green-300',
-};
-
 const customStyle = `
 input {
   padding: 12px 0;
 }
 `;
 
-const Table = ({ yearMonth, sum }: { yearMonth: YearMonth, sum: { total: number, danggn: number } }) => {
+/* TODO
+1. 월별로 보여주기
+1-1. 월 단위 devider (sticky?)
+2. 매출/매입/지출로 보여주기
+3. 캐싱하기 / 렌더링 최적화
+ */
+const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[], yearMonth: YearMonth, total: number }) => {
   const { table, updateTableData, addTableRow, queueChange, clearPendingChanges } = useAppStore();
-  const tableData = useAppStore((state) => state.tableData);
-  const tableDataRef = useRef(tableData);
+  const pendingChanges = useAppStore((state) => state.pendingChanges);
+  const pendingRef = useRef(pendingChanges);
 
   useEffect(() => {
-    tableDataRef.current = tableData; // 항상 최신 상태로 갱신
-  }, [tableData]);
+    pendingRef.current = pendingChanges; // 항상 최신 상태로 갱신
+  }, [pendingChanges]);
 
 
   const handleUpdate = (item: TableData, key: keyof TableData, value: string | number | boolean) => {
     updateTableData(item._id, key, value);
-    // queueChange({ id: item._id, category: item.category, key, value });
-    pendingIds.current.add(item._id);
+    queueChange({ id: item._id, category: item.category, key, value });
   };
 
 
@@ -81,34 +80,42 @@ const Table = ({ yearMonth, sum }: { yearMonth: YearMonth, sum: { total: number,
     // console.log(pendingChanges);
   };
 
+  // pendingChanges를 그룹핑함
+  const groupingId = (pendingList: PendingChange[]) => {
+    const grouped = new Map<string, Partial<TableData>>();
+    pendingList.forEach((item) => {
+      if (!grouped.has(item.id)) {
+        grouped.set(item.id, { _id: item.id, category: item.category });
+      }
+      const current = grouped.get(item.id)!;
+      current[item.key] = item.value;
+      grouped.set(item.id, current);
+    });
+
+    return grouped;
+  };
+
   const changeRealId = (temp_id: string, real_id: string) => {
     updateTableData(temp_id, '_id', real_id)
   }
 
-  const pendingIds = useRef(new Set<string>());
-  const autoSaveData = async () => {
-    if (pendingIds.current.size === 0) return;
+  const autoDataSave = async () => {
+    if (pendingRef.current.length === 0) return;
+    const groupedId = groupingId(pendingRef.current);
 
-    const tasks = Array.from(pendingIds.current).map(async (id) => {
-      const row = tableDataRef.current.find((r) => r._id === id);
-      if (!row) {
-        console.warn(`ID ${id}에 해당하는 데이터가 없습니다.`);
-        return;
-      }
-      if (typeof row.price === "string") {
-        const onlyNumber = (row.price as string).replace(/[^0-9.-]/g, "");
-        row.price = Number(onlyNumber);
-      }
+    const tasks = Array.from(groupedId.values()).map(async (mapItem) => {
+      // console.log('mapItem', mapItem);
+      const newData = createInitialTableData(false, mapItem);
+      console.log('mapItem', mapItem)
       try {
-        if (row._id.startsWith('temp')) {
-          const { _id, ...dataWithoutId } = row;
+        if (mapItem._id?.startsWith('temp')) {
+          const { _id, ...dataWithoutId } = newData;
           const rsp = await fetchAddData(dataWithoutId);
           if (rsp.status === 201) {
             changeRealId(_id, rsp.data._id);
           }
         } else {
-          const rsp = await fetchUpdateData(row);
-          console.log(rsp)
+          const rsp = await fetchUpdateData(newData);
           if (rsp.status !== 200) {
             console.error('업데이트 실패', rsp.data._id);
           }
@@ -116,43 +123,31 @@ const Table = ({ yearMonth, sum }: { yearMonth: YearMonth, sum: { total: number,
       } catch (error) {
         console.error(error);
       }
+
     });
-    await Promise.all(tasks)
-    console.log(`[autosave] ${pendingIds.current.size}건 저장 시도 완료`);
-    pendingIds.current.clear();
+    await Promise.all(tasks);
+    console.log(`[autosave] ${groupedId.size}건 저장 시도 완료`);
+    clearPendingChanges();
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
-      autoSaveData();
-    }, 4500);
+      autoDataSave();
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 
+  const tableColor: Record<string, string> = {
+    '매출': 'bg-yellow-300',
+    '지출': 'bg-blue-300',
+    '매입': 'bg-green-300',
+  }
 
   return (
     <article
       className='w-full text-2xl text-center mx-auto relative mt-10'>
-      {
-        table !== '매출' &&
-        <div className='absolute -top-10 right-0 flex justify-between'>
-          <span className='font-semibold mr-2'>{table} :</span>
-          {sum.total.toLocaleString()}원
-        </div>
-      }
-      {
-        table === '매출' &&
-        <div className='absolute -top-16 right-0 flex justify-between'>
-          <div>
-            <span className='font-semibold mr-2'>{table} :</span> <br />
-            <span className='font-semibold mr-2'>당근 :</span>
-          </div>
-          <div>
-            {sum.total.toLocaleString()}원 <br />
-            {sum.danggn.toLocaleString()}원
-          </div>
-        </div>
-      }
+      <div className='absolute -top-10 right-0'>
+        <span className='font-semibold'>{table}:</span> {total.toLocaleString()}원</div>
 
       <style>{customStyle}</style>
       <table className='w-full table-fixed'>
@@ -261,3 +256,19 @@ const Table = ({ yearMonth, sum }: { yearMonth: YearMonth, sum: { total: number,
 }
 
 export default Table;
+
+/*
+// 월별로 나누기 위한 코드 (미사용)
+const groupedByMonth = (rawData: TableData[]) => {
+  const groups: Record<string, TableData[]> = {};
+  rawData.forEach((item) => {
+    const date = new Date(item.saleDate);
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item);
+  })
+  return groups;
+};
+
+const groupedDataByMonth = groupedByMonth(tableData);
+*/
