@@ -36,7 +36,7 @@ export const fetchTotalData: ApiTypes["fetchTotalData"] = async () => {
 export const fetchAddData: ApiTypes["fetchAddData"] = async (newData) => {
   try {
     const rsp = await api.post(`/api/sales`, newData);
-    console.log("API Response:", rsp.data);
+    // console.log("API Response:", rsp.data);
     return rsp;
   } catch (error) {
     console.error("오류 발생!", error);
@@ -54,7 +54,7 @@ export const fetchUpdateData: ApiTypes["fetchUpdateData"] = async (rawData) => {
 
   try {
     const rsp = await api.put(`/api/sales`, updateData);
-    console.log("API Response:", rsp);
+    // console.log("API Response:", rsp);
     return rsp;
   } catch (error) {
     console.error("오류 발생!", error);
