@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import useAppStore from '../../store/useAppStore'
 import { PendingChange, TableData, DataWithClientKey, YearMonth } from '../../types/types';
-import { formatPhoneNumber, formatPriceNumber } from '../../utils/utils';
+import { formatPhoneNumber, formatPriceNumber, generatedDate, getWeekday } from '../../utils/utils';
 import { fetchAddData, fetchUpdateData } from '../../api';
 
 const tableMenu = [
@@ -59,23 +59,6 @@ const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[]
     };
 
     const generatedId = withTempId ? `temp-${Date.now()}` : "";
-    const today = new Date();
-    const todayDate = today.getDate();
-
-    // 해당 월과 연도인지 체크
-    const isSameMonth =
-      today.getFullYear() === yearMonth.year &&
-      today.getMonth() === yearMonth.month - 1;
-
-    // 사용할 날짜 객체
-    const baseDate = isSameMonth
-      ? today
-      : new Date(yearMonth.year, yearMonth.month - 1, todayDate);
-
-    // 한국 시간 기준 YYYY-MM-DD 형식으로 반환
-    const generatedDate = new Date(baseDate.getTime() + 9 * 60 * 60 * 1000)
-      .toISOString()
-      .slice(0, 10);
 
     return {
       _id: generatedId,
@@ -85,14 +68,14 @@ const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[]
       price: undefined,
       address: undefined,
       contact: undefined,
-      saleDate: generatedDate,
+      saleDate: undefined,
       isActive: false,
       ...overrides, // ✅ 덮어쓰기
     };
   };
 
   const addTempRow = () => {
-    const initValue = createInitialTableData(true, { category: table })
+    const initValue = createInitialTableData(true, { category: table, saleDate: generatedDate(yearMonth) })
     addTableRow(initValue);
     // console.log(pendingChanges);
   };
@@ -121,6 +104,7 @@ const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[]
     const groupedId = groupingId(pendingRef.current);
 
     const tasks = Array.from(groupedId.values()).map(async (mapItem) => {
+      // console.log('mapItem', mapItem);
       const newData = createInitialTableData(false, mapItem);
       try {
         if (mapItem._id?.startsWith('temp')) {
@@ -148,7 +132,7 @@ const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[]
   useEffect(() => {
     const interval = setInterval(() => {
       autoDataSave();
-    }, 5000);
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 
@@ -166,7 +150,7 @@ const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[]
 
       <style>{customStyle}</style>
       <table className='w-full table-fixed'>
-        <thead className={`${tableColor[table]} sticky top-0`}>
+        <thead className={`${tableColor[table]} sticky top-0 z-10`}>
           <tr>
             {
               tableMenu.map((item) => (
@@ -193,13 +177,18 @@ const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[]
                   {index + 1}
                 </td>
                 <td className='border-r-2 border-zinc-300'>
-                  <div className="flex items-center justify-center">
+                  <div className="flex items-center justify-center relative">
                     <input
                       type="date"
                       className={`${index % 2 === 1 ? 'bg-zinc-100' : ''}`}
-                      value={item.saleDate.slice(0, 10)}
+                      value={item.saleDate ? item.saleDate.slice(0, 10) : ""}
                       onChange={(e) => handleUpdate(item, 'saleDate', e.target.value)}
                     />
+                    {item.saleDate && (
+                      <span className="absolute right-8 top-1/2 -translate-y-1/2  pointer-events-none">
+                        {getWeekday(item.saleDate)}
+                      </span>
+                    )}
                   </div>
                 </td>
                 <td className='border-r-2 border-zinc-300'>
@@ -219,7 +208,7 @@ const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[]
                 <td className='border-r-2 border-zinc-300'>
                   <input
                     className={`${index % 2 === 1 ? 'bg-zinc-100' : ''} w-full px-4`}
-                    type="tel"
+                    type="text"
                     value={item.contact ?? ""}
                     onChange={(e) =>
                       handleUpdate(item, 'contact', formatPhoneNumber(e.target.value))
@@ -230,6 +219,12 @@ const Table = ({ tableData, yearMonth, total }: { tableData: DataWithClientKey[]
                     className={`${index % 2 === 1 ? 'bg-zinc-100' : ''} w-full px-4`}
                     type="text"
                     onChange={(e) => handleUpdate(item, 'address', e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Tab') {
+                        // e.preventDefault(); // 기본 Tab 이동 방지 (선택 사항)
+                        addTempRow();
+                      }
+                    }}
                     value={item.address ?? ""} />
                 </td>
               </tr>

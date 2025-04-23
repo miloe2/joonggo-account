@@ -8,7 +8,7 @@ export interface TableData {
   address: string | undefined;
   contact: string | undefined;
   isActive: boolean;
-  saleDate: string;
+  saleDate: string | undefined;
 }
 type NewTableData = Omit<TableData, "_id">;
 
