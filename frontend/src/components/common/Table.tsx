@@ -108,7 +108,6 @@ const Table = ({ yearMonth, sum }: { yearMonth: YearMonth, sum: { total: number,
           }
         } else {
           const rsp = await fetchUpdateData(row);
-          console.log(rsp)
           if (rsp.status !== 200) {
             console.error('업데이트 실패', rsp.data._id);
           }
