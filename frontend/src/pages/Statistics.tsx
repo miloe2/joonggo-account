@@ -8,7 +8,7 @@ const Statistics = () => {
   const { data, isLoading } = useQuery<TotalData[]>({
     queryKey: ['total'],
     queryFn: () => fetchTotalData(),
-    staleTime: 1000 * 60 * 1, // 5분간 fresh
+    staleTime: 1000 * 60 * 0.1, // 6초간 fresh
   });
 
   return (

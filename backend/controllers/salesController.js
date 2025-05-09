@@ -204,7 +204,7 @@ exports.getMonthlyCategorySummary = async (req, res) => {
       }
     ]);
     cache.total = result;
-    setTimeout(() => delete cache.sales, 10 * 1000); // 60초 후 캐시 삭제
+    setTimeout(() => delete cache.total, 10 * 1000); // 10초 후 캐시 삭제
 
     res.status(200).json(result);
   } catch (error) {
