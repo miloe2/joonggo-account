@@ -131,7 +131,7 @@ const Table = ({ yearMonth, sum }: { yearMonth: YearMonth, sum: { total: number,
 
   return (
     <article
-      className='w-full text-2xl text-center mx-auto relative mt-10'>
+      className='w-full text-xl text-center mx-auto relative mt-10'>
       {
         table !== '매출' &&
         <div className='absolute -top-10 right-0 flex justify-between'>
@@ -190,7 +190,7 @@ const Table = ({ yearMonth, sum }: { yearMonth: YearMonth, sum: { total: number,
                       onChange={(e) => handleUpdate(item, 'saleDate', e.target.value)}
                     />
                     {item.saleDate && (
-                      <span className="absolute right-8 top-1/2 -translate-y-1/2  pointer-events-none">
+                      <span className="absolute right-11 top-1/2 -translate-y-1/2  pointer-events-none">
                         {getWeekday(item.saleDate)}
                       </span>
                     )}
